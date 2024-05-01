@@ -1,0 +1,16 @@
+{% extends "myapp/base.html" %}
+
+
+
+{% block content %}
+    <div class="container">
+        <div class="row my-5 text-center">
+            <h4>Register as:</h4>
+            <div class="col-sm-12">
+                <a href="{% url 'register_doctor' %}" class="text-decoration-none">Doctor</a>
+                <a href="{% url 'register_patient' %}" class="text-decoration-none">Patient</a>   
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+    

@@ -1,0 +1,50 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+    <div class="container my-3">
+        <h1 class="alert alert-danger text-center">Patient Dashboard</h1>
+        <div class="row">
+            <div class="col-sm-8">
+            {% if success_message %}
+                <p class="alert alert-success">{{ success_message }}</p>
+            {% endif %}
+
+            <form action="" method="POST" enctype="multipart/form-data" class="shadow p-5">
+                {% csrf_token %}
+                
+                {% for fm in form %}
+                 <div class="form-group mb-3">
+                    {{fm.label_tag}}  {{fm}} <small class='text-danger'>{{fm.errors|striptags}}</small>   
+                 </div>                    
+                {% endfor %}
+                <input type="submit" value="Submit" class="btn btn-success">
+                
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <p class="alert alert-danger my-3">{{error}}</p>
+                    {% endfor %}    
+                {% endif %}
+                    
+            </form>
+            </div>
+            <div class="col-sm-4">
+                <h4><u>Medical History</u></h4>
+                <div>
+                    {% if history %}
+                    {% for hist in history %}
+                        {{ hist.id }}: {{ hist.condition }} (Diagnosed on: {{ hist.date_of_diag }})
+                        <hr>
+                    {% endfor %}
+                    {% else %}
+                    <p>No medical history found.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+
+
+    </div>
+
+    
+{% endblock content %}
