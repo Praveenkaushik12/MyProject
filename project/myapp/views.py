@@ -5,6 +5,8 @@ from .forms import UserForm, DoctorForm, PatientForm,MedicalReport
 from django.contrib.auth.models import Group
 from PyPDF2 import PdfReader
 from .models import MedicalData
+from django.contrib import messages
+
 
 def register_doctor(request):
     if request.method == 'POST':
@@ -78,6 +80,7 @@ def doctor_dashboard(request):
     else:
         return HttpResponseRedirect('/login/')
 
+#patient_dashboard
 def patient_dashboard(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -88,19 +91,20 @@ def patient_dashboard(request):
                 try:
                     parsed_text = parse_pdf(pdf_file)
                     save_to_txt(parsed_text)
-                    success_message = "Medical report uploaded successfully!"
-                    return render(request, 'myapp/patient_dashboard.html', {'form': form,'success_message': success_message})
+                    messages.success(request,"Medical report uploaded successfully!")
+                    # Redirect to the same view to clear the form
+                    return redirect('patient_dashboard')  # Use named URL pattern if defined
                 except Exception as e:
-                # Handle parsing or saving error (e.g., display error message to user)
+                    # Handle parsing or saving error
                     error_message = "An error occurred while processing the report."
                     return render(request, 'myapp/patient_dashboard.html', {'form': form, 'error_message': error_message})
-            form = MedicalReport()
         else:
-            form = MedicalReport()
+            form = MedicalReport()  # Create a new empty form on GET request
         history = MedicalData.objects.all()  # Fetch all medical data
-        return render(request, 'myapp/patient_dashboard.html', {'form': form,'history': history})
+        return render(request, 'myapp/patient_dashboard.html', {'form': form, 'history': history})
     else:
         return redirect('/login/')
+
 
 
 

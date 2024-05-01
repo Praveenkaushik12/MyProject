@@ -5,8 +5,10 @@
         <h1 class="alert alert-danger text-center">Patient Dashboard</h1>
         <div class="row">
             <div class="col-sm-8">
-            {% if success_message %}
-                <p class="alert alert-success">{{ success_message }}</p>
+            {% if messages %}
+                {% for message in messages %}
+                    <p {% if message.tags %} class="alert alert-{{message.tags}} " {% endif %}>{{message}}</p>
+                {% endfor %}     
             {% endif %}
 
             <form action="" method="POST" enctype="multipart/form-data" class="shadow p-5">
