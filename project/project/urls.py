@@ -32,4 +32,10 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('doctor/dashboard/',views.doctor_dashboard,name='doctor_dashboard'),
     path('patient/dashboard/',views.patient_dashboard,name='patient_dashboard'),
+     #new-Praveen
+     
+    path('search/doctors/', views.search_doctors, name='search_doctors'),
+    path('send/request/<int:doctor_id>/', views.send_request, name='send_request'),
+    path('view/requests/', views.view_requests, name='view_requests'),
+    path('manage/request/<int:request_id>/', views.manage_request, name='manage_request'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

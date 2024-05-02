@@ -1,0 +1,24 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+    <h1>View Requests</h1>
+    <ul>
+        {% for request in requests %}
+            <li>
+                From: {{ request.sender.user.get_full_name }} <br>
+                Message: {{ request.message }} <br>
+                Status: {{ request.status }} <br>
+                {% if request.status == 'Pending' %}
+                    <form method="POST" action="{% url 'manage_request' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="accept">Accept</button>
+                        <button type="submit" name="action" value="reject">Reject</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No requests found</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
+    

@@ -26,3 +26,12 @@ class MedicalData(models.Model):
 
     def __str__(self):
         return self.condition + ' (' + self.treatments + ')' + ' (' + self.add_info + ')'
+    
+
+#new-by Praveen
+class Request(models.Model):
+    sender = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    receiver = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    message = models.TextField()
+    status = models.CharField(max_length=20, default='Pending')  # Pending, Accepted, Rejected
+    created_at = models.DateTimeField(auto_now_add=True)

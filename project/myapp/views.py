@@ -4,8 +4,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserForm, DoctorForm, PatientForm,MedicalReport
 from django.contrib.auth.models import Group
 from PyPDF2 import PdfReader
-from .models import MedicalData
+from .models import MedicalData,Doctor
 from django.contrib import messages
+#new-Praveen
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Request
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest
+
 
 
 def register_doctor(request):
@@ -126,3 +132,56 @@ def save_to_txt(text):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+
+#---------------------------------------------------------------------------------------------
+
+#new
+@login_required
+def send_request(request, doctor_id):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        doctor = get_object_or_404(Doctor, pk=doctor_id)
+        if message:
+            # Check if the user is a patient
+            if hasattr(request.user, 'patient'):
+                sender = request.user.patient
+                receiver = doctor
+                # Create the request object but don't assign it to any variable
+                Request.objects.create(sender=sender, receiver=receiver, message=message)
+                return redirect('patient_dashboard')  # Redirect to patient dashboard
+            else:
+                return HttpResponseBadRequest("User is not registered as a patient.")
+    return redirect('home')  # Redirect to home page if request fails
+
+
+
+def search_doctors(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        if query:
+            doctors = Doctor.objects.filter(specialization__icontains=query)
+            return render(request, 'myapp/search_doctors.html', {'doctors': doctors})
+    return render(request, 'myapp/search_doctors.html', {})
+
+def view_requests(request):
+    if request.user.is_authenticated and hasattr(request.user, 'doctor'):
+        requests = Request.objects.filter(receiver=request.user.doctor)
+        return render(request, 'myapp/view_requests.html', {'requests': requests})
+    else:
+        return redirect('home')  # Redirect if not authenticated or not a doctor
+
+def manage_request(request, request_id):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        request_obj = get_object_or_404(Request, pk=request_id)
+        if action == 'accept':
+            request_obj.status = 'Accepted'
+            # Add any additional actions you want to perform when accepting a request
+        elif action == 'reject':
+            request_obj.status = 'Rejected'
+            # Add any additional actions you want to perform when rejecting a request
+        request_obj.save()
+        return redirect('doctor_dashboard')  # Redirect to doctor dashboard
+    return redirect('home')  # Redirect if method is not POST
