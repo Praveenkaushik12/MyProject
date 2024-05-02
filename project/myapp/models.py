@@ -35,3 +35,4 @@ class Request(models.Model):
     message = models.TextField()
     status = models.CharField(max_length=20, default='Pending')  # Pending, Accepted, Rejected
     created_at = models.DateTimeField(auto_now_add=True)
+    patient_username = models.CharField(max_length=150,null=True)  # Add this field

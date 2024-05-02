@@ -23,9 +23,15 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'doctor_dashboard' %}">Doctor's Dashboard</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'view_requests' %}">Get Access</a>
+          </li>
         {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'patient_dashboard' %}">Patient's Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'search_doctors' %}">Grant Access</a>
           </li>
         {% endif %}
 

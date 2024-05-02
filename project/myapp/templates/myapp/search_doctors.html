@@ -1,23 +1,30 @@
 {% extends 'myapp/base.html' %}
 
+{% load myfilter %}
+
 {% block content %}
     <h1>Search Doctors</h1>
-    <form method="GET" action="{% url 'search_doctors' %}">
-        <input type="text" name="q" placeholder="Search by specialization">
-        <button type="submit">Search</button>
-    </form>
-    <ul>
-        {% for doctor in doctors %}
-            <li>{{ doctor.user.get_full_name }} - {{ doctor.specialization }} 
-                <form method="POST" action="{% url 'send_request' doctor.id %}">
-                    {% csrf_token %}
-                    <input type="text" name="message" placeholder="Enter message">
-                    <button type="submit">Send Request</button>
-                </form>
-            </li>
-        {% empty %}
-            <li>No doctors found</li>
-        {% endfor %}
-    </ul>
+    {% if request.user.is_authenticated and request.user.patient %}
+        {% with current_patient=request.user.patient %}
+            <form method="GET" action="{% url 'search_doctors' %}">
+                <input type="text" name="q" placeholder="Search by specialization">
+                <button type="submit">Search</button>
+            </form>
+            {% for doctor in doctors %}
+                <li>{{ doctor.user.get_full_name }} - {{ doctor.specialization }} 
+                    {% if current_patient|already_requested:doctor %}
+                        <button type="button" disabled>Sent</button>
+                    {% else %}
+                        <form method="POST" action="{% url 'send_request' doctor.id %}">
+                            {% csrf_token %}
+                            <input type="text" name="message" placeholder="Enter message">
+                            <button type="submit">Send Request</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+
 {% endblock content %}
     

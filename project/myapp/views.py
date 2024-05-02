@@ -81,8 +81,10 @@ def register(request):
     return render(request,'myapp/register.html')
 
 def doctor_dashboard(request):
-    if request.user.is_authenticated:
-        return render(request,'myapp/doctor_dashboard.html')
+    if request.user.is_authenticated and hasattr(request.user, 'doctor'):
+        # Fetch accepted requests
+        accepted_requests = Request.objects.filter(receiver=request.user.doctor, status='Accepted')
+        return render(request, 'myapp/doctor_dashboard.html', {'accepted_requests': accepted_requests})
     else:
         return HttpResponseRedirect('/login/')
 
@@ -178,6 +180,8 @@ def manage_request(request, request_id):
         request_obj = get_object_or_404(Request, pk=request_id)
         if action == 'accept':
             request_obj.status = 'Accepted'
+            patient_username = request_obj.sender.user.username  # Get patient's username
+            request_obj.patient_username = patient_username  # Update request with patient's username
             # Add any additional actions you want to perform when accepting a request
         elif action == 'reject':
             request_obj.status = 'Rejected'
@@ -185,3 +189,6 @@ def manage_request(request, request_id):
         request_obj.save()
         return redirect('doctor_dashboard')  # Redirect to doctor dashboard
     return redirect('home')  # Redirect if method is not POST
+
+def doctor_already_requested(patient, doctor):
+    return Request.objects.filter(sender=patient, receiver=doctor).exists()

@@ -2,7 +2,16 @@
 
 {% block content %}
     <div class="col-sm-12 text-center">
-        <h4>Doctor Dashboard</h4>
+    <h4>Doctor Dashboard</h4>
+    <h1>Welcome, Doctor</h1>
+    <h2>Accepted Requests</h2>
+    <ul>
+        {% for request in accepted_requests %}
+            <li>{{ request.patient_username }}</li>
+        {% empty %}
+            <li>No accepted requests</li>
+        {% endfor %}
+    </ul>
     </div>
 {% endblock content %}
     
