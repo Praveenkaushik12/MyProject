@@ -22,6 +22,7 @@ class MedicalReport(forms.ModelForm):
     class Meta:
         model=MedicalData
         fields='__all__'
+        exclude=['patient']
         widgets={
             'condition':forms.TextInput(attrs={'class':'form-control'}),
             'treatments':forms.TextInput(attrs={'class':'form-control'}),

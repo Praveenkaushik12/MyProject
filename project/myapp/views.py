@@ -86,6 +86,7 @@ def patient_dashboard(request):
         if request.method == 'POST':
             form = MedicalReport(request.POST, request.FILES)
             if form.is_valid():
+                form.instance.patient = request.user.patient
                 uploaded_file = form.save()
                 pdf_file = uploaded_file.report.path
                 try:
@@ -100,7 +101,7 @@ def patient_dashboard(request):
                     return render(request, 'myapp/patient_dashboard.html', {'form': form, 'error_message': error_message})
         else:
             form = MedicalReport()  # Create a new empty form on GET request
-        history = MedicalData.objects.all()  # Fetch all medical data
+        history = MedicalData.objects.filter(patient=request.user.patient)  # Fetch all medical data
         return render(request, 'myapp/patient_dashboard.html', {'form': form, 'history': history})
     else:
         return redirect('/login/')
